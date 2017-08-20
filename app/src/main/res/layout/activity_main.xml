@@ -39,11 +39,13 @@
             android:onClick="test4"
             />
     </LinearLayout>
+    <!--
     <EditText
         android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         />
+    -->
     <WebView
         android:id="@+id/webview"
         android:layout_width="match_parent"

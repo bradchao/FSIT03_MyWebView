@@ -9,9 +9,12 @@ import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -22,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText name;
     private LocationManager lmgr;
     private MyListener myListener;
+    private MyJS myJS;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
         lmgr = (LocationManager) getSystemService(LOCATION_SERVICE);
         myListener = new MyListener();
+        myJS = new MyJS();
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -50,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void init(){
         webView = (WebView)findViewById(R.id.webview);
-        name = (EditText)findViewById(R.id.name);
+        //name = (EditText)findViewById(R.id.name);
         initWebView();
         lmgr.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,myListener);
 
@@ -65,7 +70,9 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onLocationChanged(Location location) {
-
+            double lat = location.getLatitude();
+            double lng = location.getLongitude();
+            webView.loadUrl("javascript:gotoSomewhere(" + lat + ", " + lng + ")");
         }
 
         @Override
@@ -96,8 +103,11 @@ public class MainActivity extends AppCompatActivity {
         WebSettings setting = webView.getSettings();
         setting.setJavaScriptEnabled(true);
 
+        webView.addJavascriptInterface(myJS, "brad");
+
+
         //webView.loadUrl("http://www.iii.org.tw");
-        webView.loadUrl("file:///android_asset/map.html");
+        webView.loadUrl("file:///android_asset/brad01.html");
     }
     public void test1(View view){
         webView.loadUrl("javascript:gotoSomewhere(23.971986, 121.612616)");
@@ -112,5 +122,21 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private class MyJS {
+        @JavascriptInterface
+        public void m1(String name){
+            Log.i("brad", "OK:" + name);
+        }
+
+        @JavascriptInterface
+        public void alert(String mesg){
+            AlertDialog dialog = null;
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle("Mesg");
+            builder.setMessage(mesg);
+            dialog = builder.create();
+            dialog.show();
+        }
+    }
 
 }
