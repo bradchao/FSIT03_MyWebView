@@ -28,6 +28,10 @@
           zoom: 8
         });
       }
+      function gotoSomewhere(lat, lng){
+        map.setZoom(17);
+        map.setCenter({lat:lat, lng:lng})
+      }
     </script>
 <script src="https://maps.googleapis.com/maps/api/js?callback=initMap"
         async defer></script>
